@@ -5,25 +5,26 @@
  */
 
 // Variables
-var regex = /Trump/i;
+//var regex = /Kevin/i;
+var regex = /(Kevin|Shrek)*/i;
 var search = regex.exec(document.body.innerText);
 
-var selector = ":contains('Trump'), :contains('TRUMP'), :contains('trump')";
+var selector = ":contains('Kevin'), :contains('KEVIN'), :contains('kevin'), :contains('Shrek'), :contains('SHREK'), :contains('shrek')";
 
 
 // Functions
 function filterMild() {
-	console.log("Filtering Trump with Mild filter...");
+	console.log("Mildly filtering unsafe things...");
 	return $(selector).filter("h1,h2,h3,h4,h5,p,span,li");
 }
 
 function filterDefault () {
-	console.log("Filtering Trump with Default filter...");
+	console.log("Aggressively filtering unsafe things...");
 	return $(selector).filter(":only-child").closest('div');
 }
 
 function filterVindictive() {
-	console.log("Filtering Trump with Vindictive filter...");
+	console.log("Vindictively filtering unsafe things...");
 	return $(selector).filter(":not('body'):not('html')");
 }
 
@@ -32,11 +33,9 @@ function getElements(filter) {
 	   return filterMild();
    } else if (filter == "vindictive") {
 	   return filterVindictive();
-   } else if (filter == "aggro") {
-	   return filterDefault();
    } else {
-     return filterMild();
-   }
+	   return filterDefault();
+	 }
 }
 
 function filterElements(elements) {
@@ -47,15 +46,15 @@ function filterElements(elements) {
 
 // Implementation
 if (search) {
-   console.log("Donald Trump found on page! - Searching for elements...");
+   console.log("Unsafe things found on page! - Searching for elements...");
    chrome.storage.sync.get({
-     filter: 'aggro',
+     filter: 'mild',
    }, function(items) {
 	   console.log("Filter setting stored is: " + items.filter);
 	   elements = getElements(items.filter);
 	   filterElements(elements);
-	   chrome.runtime.sendMessage({method: "saveStats", trumps: elements.length}, function(response) {
-			  console.log("Logging " + elements.length + " trumps.");
+	   chrome.runtime.sendMessage({method: "saveStats", unsafeThings: elements.length}, function(response) {
+			  console.log("Logging " + elements.length + " unsafe things.");
 		 });
 	 });
   chrome.runtime.sendMessage({}, function(response) {});
