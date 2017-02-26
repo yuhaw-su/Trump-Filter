@@ -1,13 +1,13 @@
 function onMessage(request, sender, sendResponse) {
   if (request.method == "saveStats") {
     console.log("Storing stats...");
-    console.log ("Adding " + request.unsafeThings + " unsafe things to stats.");
+    console.log ("Adding " + request.unsafeThingCount + " unsafe things to stats.");
     chrome.storage.sync.get({
-      unsafeThings: 0,
+      unsafeThingCount: 0,
       pages: 0
     }, function(items) {
       chrome.storage.sync.set({
-        unsafeThings: items.unsafeThings + request.unsafeThings,
+        unsafeThingCount: items.unsafeThingCount + request.unsafeThingCount,
         pages: items.pages + 1
       });
     });
@@ -23,7 +23,7 @@ function onMessage(request, sender, sendResponse) {
       filter: 'mild'
     }, function(items) {
       console.log("Filtering on " + items.filter + " setting.");
-      ga('send', 'event', 'Filter', 'unsafeThings', items.filter);
+      ga('send', 'event', 'Filter', 'unsafeThingCount', items.filter);
     });
     sendResponse({});
   }

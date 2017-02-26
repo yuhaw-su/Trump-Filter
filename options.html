@@ -24,7 +24,12 @@ Allows user to adjust filtration settings.
     </div>
 		<div id="stats" class="contentContainer">
 			<h4>Pages filtered: <span id="pagecount"></span></h4>
-			<h4>Unsafe things removed: <span id="unsafeThings"></span></h4>
+			<h4>Unsafe things removed: <span id="unsafeThingCount"></span></h4>
+			<form>
+			  Remove from you Safespace: <input type="text" name="thingToRemove" id="thingToRemove">
+			  <input type="submit" value="Submit" onclick="addUnsafeThing()">
+			</form>
+			<div id="addedMessage"></div>
 		</div>
 		<div id="footer">
 			<p>This work is licensed under <a

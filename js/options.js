@@ -15,11 +15,11 @@ function saveOptions() {
 function getOptions(callback) {
   chrome.storage.sync.get({
     filter: 'mild',
-    unsafeThings: 0,
+    unsafeThingCount: 0,
     pages: 0
   }, function(items) {
     document.getElementById('selectedFilter').value = items.filter;
-    document.getElementById('unsafeThings').textContent = items.unsafeThings;
+    document.getElementById('unsafeThingCount').textContent = items.unsafeThingCount;
     document.getElementById('pagecount').textContent = items.pages;
     callback(items.filter);
     return items.filter;
@@ -31,6 +31,24 @@ function restoreOptions() {
     document.getElementById('selectedFilter').value = filter;
   });
   document.getElementById('selectedFilter').addEventListener('change', saveOptions);
+}
+
+function addUnsafeThing() {
+  var thingText = document.getElementById('thingToRemove').value;
+  chrome.storage.sync.get({
+    unsafeThings: []
+  }, function(items) {
+    var tempItems = items.unsafeThings;
+    tempItems.push(thingText)
+    chrome.storage.sync.set({
+      unsafeThings: tempItems,
+    });
+    var status = document.getElementById('addedMessage');
+    status.textContent = 'Added unsafe thing  - ' + thingText;
+    setTimeout(function() {
+      status.textContent = '';
+    }, 750);
+  });
 }
 
 document.addEventListener('DOMContentLoaded', restoreOptions);
