@@ -14,7 +14,7 @@ function saveOptions() {
 
 function getOptions(callback) {
   chrome.storage.sync.get({
-    filter: 'aggro',
+    filter: 'default',
     unsafeThingCount: 0,
     pages: 0,
     unsafeThing1: '',

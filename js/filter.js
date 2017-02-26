@@ -106,26 +106,26 @@ function getSearchTerms(singularTerms)
 	return holdingArray;
 }
 
-function filterMild() {
-	console.log("Mildly filtering unsafe things...");
+function filterJustText() {
+	console.log("Filtering unsafe things just by text...");
 	return $(selector).filter("h1,h2,h3,h4,h5,p,span,li");
 }
 
-function filterDefault () {
-	console.log("Aggressively filtering unsafe things...");
+function filterDefault() {
+	console.log("Filtering unsafe things...");
 	return $(selector).filter(":only-child").closest('div');
 }
 
-function filterVindictive() {
-	console.log("Vindictively filtering unsafe things...");
+function filterExtreme() {
+	console.log("Filtering unsafe things with extreme force...");
 	return $(selector).filter(":not('body'):not('html')");
 }
 
 function getElements(filter) {
-   if (filter == "mild") {
-	   return filterMild();
-   } else if (filter == "vindictive") {
-	   return filterVindictive();
+   if (filter == "justtext") {
+	   return filterJustText();
+   } else if (filter == "extreme") {
+	   return filterExtreme();
    } else {
 	   return filterDefault();
 	 }
@@ -190,7 +190,7 @@ getSelector();
 // if (search) {
    console.log("Unsafe things found on page! - Searching for elements...");
    chrome.storage.sync.get({
-     filter: 'aggro',
+     filter: 'default',
    }, function(items) {
 	   console.log("Filter setting stored is: " + items.filter);
 	   var elements = getElements(items.filter);
