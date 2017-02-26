@@ -1,38 +1,56 @@
 /*
  * Trump Filter - Content Script
  *
- * This is the primary JS file that manages the detection and filtration of Donald Trump from the web page.
+ * This is the primary JS file that manages the detection and filtration of unsafe things from the web page.
  */
 
 // Variables
-//var regex = /Kevin/i;
-// var regex = /(Kevin|Shrek)*/i;
-var testingRegexArray = ["Kyle Christiansen", "Kevin", "Shrek"];
-var regex = formatRegex(testingRegexArray);
-// chrome.storage.sync.get({
-// 	unsafeThings: []
-// }, function(items) {
-// 	regex = new RegExp(items.unsafeThings.join("|"), 'i');
-// });
-var search = regex.exec(document.body.innerText);
-//
-// //var selector = ":contains('Kevin'), :contains('KEVIN'), :contains('kevin'), :contains('Shrek'), :contains('SHREK'), :contains('shrek')";
-var selector = createSelector(getSearchTerms(testingRegexArray));
+// var defaultFilters = ["Trump", "Iowa State", "Nickelback"];
+// var customFilters = [];
+var defaultFilter = "pizza";
+var filter1;
+var selector;
 
 // Functions
-function formatRegex(strArray)
-{
-	var outArray = [];
-	for (var i = 0; i < strArray.length; i++)
-	{
-		outArray.push(strArray[i].toLowerCase());
-		if (strArray[i].split(" ").length > 1)
-		{
-			outArray.push(strArray[i].toLowerCase().replace(/\s/g, '+'));
-		}
-	}
-	return new RegExp(outArray.join("|"), 'i');
-}
+
+
+// function getFilters()
+// {
+// 	chrome.storage.sync.get({
+// 		unsafeThing1: ''
+// 	}, function(items) {
+// 		filter1 = items.unsafeThing1;
+// 		// customFilters = items.unsafeThing1;
+// 	});
+// 	if (filter1 === null || filter1 === 0)
+// 	{
+// 		filter1 = defaultFilter;
+// 	}
+// }
+
+// function getRegex()
+// {
+// 	getFilters();
+//
+// 	var outArray = [];
+// 	// for (var i = 0; i < customFilters.length; i++)
+// 	// {
+// 	// 	outArray.push(customFilters[i].toLowerCase());
+// 	// 	if (customFilters[i].split(" ").length > 1)
+// 	// 	{
+// 	// 		outArray.push(customFilters[i].toLowerCase().replace(/\s/g, '+'));
+// 	// 	}
+// 	// }
+// 	outArray.push(filter1.toLowerCase());
+// 	if (filter1.split(" ").length > 1)
+// 	{
+// 		// outArray.push(customFilters[i].toLowerCase().replace(/\s/g, '+'));
+// 		// outArray.push(customFilters[i].toLowerCase().replace(/\s/g, '%20'));
+// 		outArray.push(filter1.toLowerCase().replace(/\s/g, '+'));
+// 		outArray.push(filter1.toLowerCase().replace(/\s/g, '%20'));
+// 	}
+// 	return new RegExp(outArray.join("|"), 'i');
+// }
 
 function createSelector(searchTerms)
 {
@@ -58,7 +76,7 @@ function getDifferentStringRepresentations(thing)
 				representations[2] += (" " + wordSplit[i]);
 				//representations[2] += (" " + wordSplit[i].replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}));
 			}
-			var separators = [",", ".", "-", "_", "+", ""];
+			var separators = [",", ".", "-", "_", "+", "%20", ""];
 			for (var i = 0; i < separators.length; i++)
 			{
 				representations.push(representations[0].split(" ").join(separators[i]));
@@ -73,14 +91,15 @@ function getDifferentStringRepresentations(thing)
 function getSearchTerms(singularTerms)
 {
 	var holdingArray = [];
-	if (singularTerms.length > 0)
-	{
-		holdingArray = getDifferentStringRepresentations(singularTerms[0]);
-		for (var i = 1; i < singularTerms.length; i++)
-		{
-			holdingArray = holdingArray.concat(getDifferentStringRepresentations(singularTerms[i]));
-		}
-	}
+	// if (singularTerms.length > 0)
+	// {
+	// 	holdingArray = getDifferentStringRepresentations(singularTerms[0]);
+	// 	for (var i = 1; i < singularTerms.length; i++)
+	// 	{
+	// 		holdingArray = holdingArray.concat(getDifferentStringRepresentations(singularTerms[i]));
+	// 	}
+	// }
+	holdingArray = getDifferentStringRepresentations(singularTerms);
 	return holdingArray;
 }
 
@@ -114,18 +133,36 @@ function filterElements(elements) {
 	elements.fadeOut("fast");
 }
 
+function getSelector()
+{
+	chrome.storage.sync.get({
+		unsafeThing1: ''
+	}, function(items) {
+		filter1 = items.unsafeThing1;
+		selector = createSelector(getSearchTerms(filter1));
+	});
+	if (filter1 === null || filter1 === '')
+	{
+		filter1 = defaultFilter;
+	}
+}
+
 // Implementation
-if (search) {
+// customFilters = defaultFilters.slice();
+// var regex = getRegex();
+// var search = regex.exec(document.body.innerText);
+getSelector();
+// if (search) {
    console.log("Unsafe things found on page! - Searching for elements...");
    chrome.storage.sync.get({
      filter: 'mild',
    }, function(items) {
 	   console.log("Filter setting stored is: " + items.filter);
-	   elements = getElements(items.filter);
+	   var elements = getElements(items.filter);
 	   filterElements(elements);
 	   chrome.runtime.sendMessage({method: "saveStats", unsafeThingCount: elements.length}, function(response) {
 			  console.log("Logging " + elements.length + " unsafe things.");
 		 });
 	 });
   chrome.runtime.sendMessage({}, function(response) {});
-}
+// }
