@@ -14,21 +14,61 @@ function saveOptions() {
 
 function getOptions(callback) {
   chrome.storage.sync.get({
-    filter: 'mild',
+    filter: 'aggro',
     unsafeThingCount: 0,
     pages: 0,
-    unsafeThing1: ''
+    unsafeThing1: '',
+    unsafeThing2: '',
+    unsafeThing3: '',
+    unsafeThing4: '',
+    unsafeThing5: ''
   }, function(items) {
     document.getElementById('selectedFilter').value = items.filter;
     document.getElementById('unsafeThingCount').textContent = items.unsafeThingCount;
     document.getElementById('pagecount').textContent = items.pages;
-    if (items.unsafeThing1)
+    var list = document.getElementById('filters');
+    document.getElementById('submitButton').disabled = false;
+    if (items.unsafeThing1.length === 0)
     {
-      document.getElementById('unsafeThing1').textContent = items.unsafeThing1;
+      document.getElementById('restrictingHeader').innerText = "No Safespace created.";
+      while( list.firstChild )
+      {
+        list.removeChild( list.firstChild );
+      }
     }
     else
     {
-      document.getElementById('unsafeThing1').textContent = "fuck";
+      document.getElementById('restrictingHeader').innerText = "Restricting:";
+      var entry = document.createElement('li');
+      entry.appendChild(document.createTextNode(items.unsafeThing1));
+      list.appendChild(entry);
+    }
+    if (items.unsafeThing2)
+    {
+      var entry = document.createElement('li');
+      entry.appendChild(document.createTextNode(items.unsafeThing2));
+      list.appendChild(entry);
+    }
+    if (items.unsafeThing3)
+    {
+      var entry = document.createElement('li');
+      entry.appendChild(document.createTextNode(items.unsafeThing3));
+      list.appendChild(entry);
+    }
+    if (items.unsafeThing4)
+    {
+      var entry = document.createElement('li');
+      entry.appendChild(document.createTextNode(items.unsafeThing4));
+      list.appendChild(entry);
+    }
+    if (items.unsafeThing5)
+    {
+      var entry = document.createElement('li');
+      entry.appendChild(document.createTextNode(items.unsafeThing5));
+      list.appendChild(entry);
+
+      document.getElementById('restrictingHeader').innerText = "Restricting (maximum number of filters being used):";
+      document.getElementById('submitButton').disabled = true;
     }
     callback(items.filter);
     return items.filter;
@@ -38,22 +78,44 @@ function getOptions(callback) {
 function addUnsafeThing() {
   var thingText = document.getElementById('thingToRemove').value;
   // var tempItems;
-  // chrome.storage.sync.get({
-  //   unsafeThing1: ''
-  // }, function(items) {
-  //   tempItems = items.unsafeThingsList.slice();
-  // });
-  // tempItems.push(thingText);
-  chrome.storage.sync.set({
-    unsafeThing1: thingText
-  }, function() {
-    var status = document.getElementById('addedMessage');
-    status.textContent = 'Added unsafe thing  - ' + thingText;
-    setTimeout(function() {
-      status.textContent = '';
-    }, 1500);
+  chrome.storage.sync.get({
+    unsafeThing1: '',
+    unsafeThing2: '',
+    unsafeThing3: '',
+    unsafeThing4: '',
+    unsafeThing5: ''
+  }, function(items) {
+    if (items.unsafeThing1.length === 0)
+    {
+      items.unsafeThings1 = thingText;
+    }
+    else if (items.unsafeThing2.length === 0)
+    {
+      items.unsafeThings2 = thingText;
+    }
+    else if (items.unsafeThing3.length === 0)
+    {
+      items.unsafeThings3 = thingText;
+    }
+    else if (items.unsafeThing4.length === 0)
+    {
+      items.unsafeThings4 = thingText;
+    }
+    else if (items.unsafeThing5.length === 0)
+    {
+      items.unsafeThings5 = thingText;
+    }
+
+    chrome.storage.sync.set({
+      unsafeThing1: items.unsafeThings1,
+      unsafeThing2: items.unsafeThings2,
+      unsafeThing3: items.unsafeThings3,
+      unsafeThing4: items.unsafeThings4,
+      unsafeThing5: items.unsafeThings5
+    });
+    getOptions();
   });
-  getOptions();
+
 }
 
 function clearSettings() {

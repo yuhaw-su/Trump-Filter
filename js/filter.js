@@ -7,8 +7,12 @@
 // Variables
 // var defaultFilters = ["Trump", "Iowa State", "Nickelback"];
 // var customFilters = [];
-var defaultFilter = "pizza";
+var defaultFilter = "Trump";
 var filter1;
+var filter2;
+var filter3;
+var filter4;
+var filter5;
 var selector;
 
 // Functions
@@ -91,15 +95,14 @@ function getDifferentStringRepresentations(thing)
 function getSearchTerms(singularTerms)
 {
 	var holdingArray = [];
-	// if (singularTerms.length > 0)
-	// {
-	// 	holdingArray = getDifferentStringRepresentations(singularTerms[0]);
-	// 	for (var i = 1; i < singularTerms.length; i++)
-	// 	{
-	// 		holdingArray = holdingArray.concat(getDifferentStringRepresentations(singularTerms[i]));
-	// 	}
-	// }
-	holdingArray = getDifferentStringRepresentations(singularTerms);
+	if (singularTerms.length > 0)
+	{
+		holdingArray = getDifferentStringRepresentations(singularTerms[0]);
+		for (var i = 1; i < singularTerms.length; i++)
+		{
+			holdingArray = holdingArray.concat(getDifferentStringRepresentations(singularTerms[i]));
+		}
+	}
 	return holdingArray;
 }
 
@@ -136,15 +139,47 @@ function filterElements(elements) {
 function getSelector()
 {
 	chrome.storage.sync.get({
-		unsafeThing1: ''
+		unsafeThing1: '',
+		unsafeThing2: '',
+		unsafeThing3: '',
+		unsafeThing4: '',
+		unsafeThing5: ''
 	}, function(items) {
 		filter1 = items.unsafeThing1;
-		selector = createSelector(getSearchTerms(filter1));
+		filter2 = items.unsafeThing2;
+		filter3 = items.unsafeThing3;
+		filter4 = items.unsafeThing4;
+		filter5 = items.unsafeThing5;
+		if (filter1 === null || filter1.length === 0)
+		{
+			filter1 = defaultFilter;
+			chrome.storage.sync.set({
+				unsafeThing1: filter1
+			});
+		}
+		var terms = [];
+		if (filter1)
+		{
+			terms.push(filter1);
+		}
+		if (filter2)
+		{
+			terms.push(filter2);
+		}
+		if (filter3)
+		{
+			terms.push(filter3);
+		}
+		if (filter4)
+		{
+			terms.push(filter4);
+		}
+		if (filter5)
+		{
+			terms.push(filter5);
+		}
+		selector = createSelector(getSearchTerms(terms));
 	});
-	if (filter1 === null || filter1 === '')
-	{
-		filter1 = defaultFilter;
-	}
 }
 
 // Implementation
@@ -155,7 +190,7 @@ getSelector();
 // if (search) {
    console.log("Unsafe things found on page! - Searching for elements...");
    chrome.storage.sync.get({
-     filter: 'mild',
+     filter: 'aggro',
    }, function(items) {
 	   console.log("Filter setting stored is: " + items.filter);
 	   var elements = getElements(items.filter);
